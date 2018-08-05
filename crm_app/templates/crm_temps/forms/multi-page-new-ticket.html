@@ -1,0 +1,234 @@
+{% block multi-page-new-ticket %}
+<form method=POST action="{% url 'crm:create_ticket' %}" style='margin:1.5rem; box-shadow: -1px 3px 5px 1px grey;'>
+    {% csrf_token %}
+   {{ ticket.errors }}
+   {{ entries.non_field_errors}}
+
+<div class='v' style='border-bottom:solid grey 2px; margin: 1.5rem;'>
+
+ <div class='row'>
+    <div class='col l4 s12 '>
+        <h6>Enter Title</h6>
+    {{ ticket.ticket_title }}
+    </div>
+    <div class='col l4 offset-l4 s12'>
+        <h6>Tech Name</h6>
+    {{ ticket.technician }}
+    </div>
+ </div>
+
+
+ <div class='row'>
+    <div class='col l4 s12'>
+        <h6>Ticket Start Date</h6>
+    {{ ticket.ticketstartdate }}
+    <div type="hidden">
+        <input type="hidden" id="pickdate"></input>
+        <input type="hidden" id="picktime"></input>
+    </div>
+    </div>
+    <div class='col l4 offset-l4 s12'>
+        <h6> Total Time Spent On Ticket</h6>
+        {{ ticket.time_spent_minutes_field }}
+    </div>
+</div>
+ <div class='row'>
+    <div class='col l6 s12'>
+        <h6>Client Name</h6>
+    {{ ticket.clientid }}
+    </div>
+</div>
+ <div class='row'>
+    <div class='col l4 s12'>
+        <h6>Contact Name</h6>
+    {{ ticket.contact_name }}
+    </div>
+    <div class='col l4 offset-l4 s12'>
+        <h6>Send Complete Email?</h6>
+        <div id="hotness">
+        </div>
+    </div>
+</div>
+ <div class='row'>
+    <div class='col l6 s12'>
+        <h6>Ticket Status</h6>
+    {{ ticket.ticket_status }}
+    </div>
+</div>
+ <div class='row'>
+    <div class='col l6 s12'>
+        <h6>Client Notes</h6>
+    {{ ticket.client_notes }}
+    </div>
+</div>
+ <div class='row'>
+    <div class='col l6 s12'>
+        <h6>Worktype</h6>
+    {{ ticket.worktype }}
+    </div>
+</div>
+ <div class='row'>
+    <div class='col l6 s12'>
+        <h6>Internal Notes</h6>
+    {{ ticket.internal_notes }}
+    </div>
+</div>
+ <div class='row'>
+    <div class='col l4 s12'>
+    {{ ticket.oid }}
+    </div>
+        <div class='col l4 s12'>
+    {{ ticket.timestamp }}
+    </div>
+        <div class='col l4 s12'>
+    {{ ticket.ticketnumber }}
+    </div>
+</div>
+
+
+
+
+</div>
+   
+
+{{ entries }}
+    <div type="hidden">
+        <input type="hidden" id="pickstartdate"></input>
+        <input type="hidden" id="pickstarttime"></input>
+    </div>
+        <div type="hidden">
+        <input type="hidden" id="pickenddate"></input>
+        <input type="hidden" id="pickendtime"></input>
+    </div>
+<button class="btn waves-effect waves-light" type="submit">Submit
+<i class="material-icons right">send</i>
+</button>
+</form>
+
+
+
+
+<script>
+   
+    $('select').formSelect();
+///////////ticket start date///////////////////
+    $('#pickdate').datepicker({
+        format: 'yyyy-mm-dd',
+        onClose: function(){
+            $('#picktime').timepicker('open');
+        },
+    });
+    $('#picktime').timepicker({
+        onCloseStart: function(){
+            var date = $('#pickdate').val();
+            var time = $('#picktime').val();
+            $('#id_ticketstartdate').val(date+' '+time);
+        },
+    });
+
+//////////entry startdate////////////////
+    $('#pickstartdate').datepicker({
+        format: 'yyyy-mm-dd',
+        onClose: function(){
+            $('#pickstarttime').timepicker('open');
+        },
+    });
+    $('#pickstarttime').timepicker({
+        onCloseStart: function(){
+            var date = $('#pickstartdate').val();
+            var time = $('#pickstarttime').val();
+            $('#id_startdate').val(date+' '+time);
+        },
+    });
+//////////////entry enddate/////////////////////////
+    $('#pickenddate').datepicker({
+        format: 'yyyy-mm-dd',
+        onClose: function(){
+            $('#pickendtime').timepicker('open');
+        },
+    });
+    $('#pickendtime').timepicker({
+        onCloseStart: function(){
+            var date = $('#pickenddate').val();
+            var time = $('#pickendtime').val();
+            $('#id_enddate').val(date+' '+time);
+        },
+    });
+
+
+    $('#id_startdate').click(function(){
+        $('#pickstartdate').datepicker('open')
+    });
+    $('#id_enddate').click(function(){
+        $('#pickenddate').datepicker('open')
+    })
+
+    $('#id_ticketstartdate').click(function(){
+        $('#pickdate').datepicker('open');
+    });
+
+
+
+    $('#id_clientid').change(function(event){
+        if($("#hotness").children().length) {
+          $("#hotness").empty();
+            ajaxEmail();
+        } else {
+            ajaxEmail();
+        }
+    });
+        function ajaxEmail () {    
+        var urls = $('#ajax_url').attr('href');
+        var  clientid = $('#id_clientid');
+        $.ajax({
+            type: "POST",
+            dataType: "json",
+            url: urls,
+            data: {
+                'clientid' : $('#id_clientid').val(), csrfmiddlewaretoken:$('input[name=csrfmiddlewaretoken]').val()
+            },
+            success: function(result) {
+                $.each(result, function(index, value) {
+                    $('#id_contact_name')
+                        .append($("<option></option>")
+                                .attr("value",value.fields.contactname)
+                                .text(value.fields.contactname));
+
+                });
+        $('#id_contact_name').formSelect();
+
+
+
+
+                $.each(result, function(index, value){
+                    if($('.input'))
+                    if (value.fields.sendticketcompleteemail == true) {
+                        $('#hotness').append($('<p></p>')).append($('<label></label>').attr('for', value.fields.emailaddress)).append($('<input />').attr('type','checkbox')).append($('<span></span>').text(value.fields.contactname))                     
+                    };
+                     
+                })
+
+
+            },
+        
+            error: function (error) {
+                alert("Error with Ajax, You SUCK");
+            }
+        });
+    };
+
+</script>
+{% endblock %}
+
+ 
+
+
+
+
+
+
+
+
+
+
+

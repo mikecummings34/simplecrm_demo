@@ -1,0 +1,123 @@
+{% extends 'base.html' %}
+
+{% block head %}
+<title>Profile</title>
+<form method="GET" action="{% url 'accounts:testemail' %}">
+	<button type='submit'>TESTMAIL</button>
+</form>
+{% endblock %}
+
+{% block title %}
+<h3>Dashboard<h4>
+{% endblock %}
+
+{% block body %} 
+{% if tickets %}
+
+
+  <div class="row">
+    <div class="col s12">
+      <ul class="tabs">
+        <li id="currentissues" class="tab col s12"><a class="active" href="#test1">Current Issues</a></li>
+        <li id="newticket" class="tab col s12"><a id="newtix" href="#test2">Start New Ticket</a></li>
+        <li id="orders" class="tab col s12"><a href="#test3">View Orders and Invoices</a></li>
+        <li id="contacts" class="tab col s12"><a href="#test4">Clients and Contacts</a></li>
+      </ul>
+    </div>
+    <div id="test1" class="col s12"></div>
+    <div id="test2" class="col s12"></div>
+    <div id="test3" class="col s12">Test 3</div>
+    <div id="test4" class="col s12">Test 4</div>
+  </div>
+
+<a id="ajaxUrl" href="{% url 'crm:ticket-filter' %}"></a>
+<a id="ajax_url" href="{% url 'crm:ajax_req' %}"></a>
+<a id="clients_url" href="{% url 'crm:client' %}"></a>
+<a id="form_url" href="{% url 'crm:create_ticket' %}"></a>
+
+
+{% else %}
+<div class='container'>
+<h2>username: {{ user }}</h2>
+<h2>first name: {{ user.first_name }}</h2> 
+<h2>last name: {{ user.last_name }}</h2>
+<h2>email: {{ user.email }}</h2>
+</div>
+<form method="POST" action="" id="auto_submit_form">
+	{% csrf_token %}
+	<input type="hidden" name="recent_tickets" value="{{ user.username }}"></input>
+</form>
+{% endif %}
+<style>
+.current-issues-window {
+	max-height: 50vh;
+	max-width: 30vw;
+	overflow-x: hidden;
+	overflow-y: scroll;
+	background-color: lightgray;
+	float: right;
+}
+.tabs .tab a {
+	font-size: 25px;
+}
+@media only screen and (max-width: 1000px) {
+	.tabs .tab a {
+		font-size: 50px;
+		display: inline-block;
+	}
+	.tabs {
+		display:inline;
+	}
+}
+
+</style>
+<script type="text/javascript">
+		function tester(){
+	 $('tbody:contains("POS")').css('color','red');
+
+	};
+	$(document).ready(function(){
+		$('#newticket').click(function(){
+			$.get($('#form_url').attr('href'), function(data){
+				$('#test1').empty();
+				$('#test2').html(data);
+		});
+	});
+
+		$('#contacts').click(function(){
+			$.get($('#clients_url').attr('href'), function(data){
+				$('#test4').html(data);
+			});
+		});
+///maybe add the filter is a form and include it in the templates
+
+		$('#currentissues').click(function(){
+			$.get($('#ajax_url').attr('href'), function(data){				
+				$('#test1').html(data)
+			});
+			tester();
+		});
+		$('.collapsible').collapsible();
+
+	
+	$("#auto_submit_form").submit();
+	$('.tabs').tabs();
+	$('.fixed-action-btn').floatingActionButton();
+    $('.datepicker').datepicker();
+    $('select').formSelect();
+
+	});
+
+
+///Try adding a function that executes the ajax call on the tix template. Then when the tab is clicked it will call the function??
+//The easiest method may be to simply have types of ticket lists. 1- current tickets(everything in last 3 months) 2- 
+
+		
+
+	
+
+</script>
+
+{% endblock %}
+
+

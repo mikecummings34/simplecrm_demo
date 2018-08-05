@@ -1,0 +1,61 @@
+
+{% block body %}
+
+		
+
+
+		<div class="row" id="title_row">
+			<h1>{{ clientinfo.clientname }}</h1>
+			<form method="GET" action="{% url 'crm:tickets' %}">				
+				<button class="btn btn-default" type='submit' name="cid" value="{{ clientinfo.oid }}">View Service Tickets</button>
+			</form>
+			
+		</div>
+		<div class="row" id="adress_row">
+			<h3>Address</h3>
+				<div class="row">
+				<h4>123 Real Street</h4> 
+				<h4>City, State 12345</h4>
+				</h4>
+		</div>
+		</div>
+				<table class='responsive-table-vertical striped'>
+			<thead>
+				<th data-label="Contact">Contact Name</th>
+				<th data-label="Phone Number">Phone Number</th>
+				<th data-label="Cell Phone">Cell Phone</th>
+				<th data-label="Email">Email</th>
+				<th data-label="Position">Position</th>
+			</thead>
+			<tbody>
+				{% for contact in contact %}
+				<tr>
+					<td data-label="Contact">John Doe</td>
+					<td data-label="Phone Number">555-555-5555</td>
+					<td data-label="Cell Phone">555-555-5555</td>
+					<td data-label="Email">first.last@email.com</td>
+					<td data-label="Position">Employee</td>
+				</tr>
+				{% endfor %}
+			</tbody>
+		</table>
+
+
+
+		<div class="row" id="clientinfo">
+			<div class="row">
+				<h3>Notes</h3>
+			</div>				
+				<h4>{{ clientinfo.notes }}<br/>
+			<div class="row">
+				<h3>Client Type</h3>
+			</div>
+				{{ type.type }}<br/>
+			<div class="row">
+				<h3>Do not Assist?</h3>
+			</div>
+			{{ clientinfo.donotassist|yesno:"Do not assist,Assist" }}<br/>
+			</h4>			
+		</div>
+
+{% endblock %}
