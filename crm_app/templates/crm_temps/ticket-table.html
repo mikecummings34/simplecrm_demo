@@ -23,11 +23,11 @@
 	          			<tr>
 	        				
 	          				<td data-label='Technician'>{{ tickets.technician}}</td>	
-	          				<td data-label='Client'><{{ tickets.clientid }}</td>          			
+	          				<td data-label='Client'>{{ tickets.clientid }}</td>          			
 				            <td data-label='Ticket Title'>{{ tickets.ticket_title }}</td>
 				            <td data-label='Start Date'>{{ tickets.ticketstartdate }}</td>
-				            <td data-label='Ticket Status'>{{ tickets.ticket_status }}</td>
-				            <td><button value="{{ tickets.oid }}" name="ticket" class="btn-floating btn-large waves-effect waves-light red"><i class="material-icons">check</i></button></td>
+				            <td id='ticketStatus' name="{{ tickets.ticket_status }}" data-label='Ticket Status'>{{ tickets.ticket_status }}</td>
+				            <td><button value="{{ tickets.oid }}" name="ticket"><i class="material-icons">check</i></button></td>
 				           
 	          			</tr>
 
@@ -46,13 +46,32 @@
     $('.datepicker').datepicker();
     $('select').formSelect();
 
-		$('#tickettab').click(function(){
+		$('#test1 #tickettab').click(function(){
 			var datastring = $('#filter_form').serialize();
 			$.get($('#filter_form').attr('action'), datastring, function(data){
 				$('#test1').html(data);
 			 
-		})
-			})
+		});
+			});
+		$('#ticketStatus').each(function(){
+			if ($('#ticketStatus').attr('name') == '5') {
+			($('td button').attr('class','btn-floating btn-large waves-effect waves-light red teal lighten-1'));
+		} 
+		else if ($('#ticketStatus').attr('name') == '1') {
+			($('td button').attr('class','btn-floating btn-large waves-effect waves-light red red lighten-3'));
+			($('td button i').text('warning'));
+		}
+		else if ($('#ticketStatus').attr('name') == '2') {
+			($('td button').attr('class','btn-floating btn-large waves-effect waves-light red blue lighten-1'));
+			($('td button i').text('av_timer'));
+		}
+		else if ($('#ticketStatus').attr('name') == '3') {
+			($('td button').attr('class','btn-floating btn-large waves-effect waves-light red orange lighten-1'));
+		}
+		else if ($('#ticketStatus').attr('name') == '4') {
+			($('td button').attr('class','btn-floating btn-large waves-effect waves-light red purple lighten-1'));
+		};
+	});
   });
 </script>
 
